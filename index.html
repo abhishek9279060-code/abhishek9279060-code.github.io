@@ -1,81 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Image Compressor</title>
+<meta charset="UTF-8">
+<title>Image Compressor</title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Free online image compressor tool">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Free online image compressor tool">
 
-  <!-- Google AdSense -->
-  <script async
-    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2205511579570420"
-    crossorigin="anonymous"></script>
+<!-- Google AdSense (same as before) -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2205511579570420"
+     crossorigin="anonymous"></script>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
 
-    h1 {
-      margin-top: 30px;
-    }
+h1 {
+  margin-top: 30px;
+}
 
-    .container {
-      background: white;
-      padding: 20px;
-      max-width: 400px;
-      margin: 30px auto;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
+.container {
+  background: #fff;
+  padding: 20px;
+  max-width: 400px;
+  margin: 30px auto;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
-    input {
-      margin: 10px 0;
-    }
+input, button {
+  margin: 10px 0;
+}
 
-    footer {
-      margin-top: 40px;
-      padding: 15px;
-      background: #222;
-    }
+img {
+  max-width: 100%;
+  margin-top: 10px;
+}
 
-    footer a {
-      color: #fff;
-      margin: 0 8px;
-      text-decoration: none;
-      font-size: 14px;
-    }
-  </style>
+footer {
+  margin-top: 40px;
+  padding: 15px;
+  background: #222;
+}
+
+footer a {
+  color: #fff;
+  margin: 0 8px;
+  text-decoration: none;
+  font-size: 14px;
+}
+</style>
 </head>
 
 <body>
 
-  <h1>Image Compressor</h1>
+<h1>Image Compressor</h1>
 
-  <div class="container">
-    <input type="file" id="upload" accept="image/*"><br>
-    <button onclick="compressImage()">Compress Image</button>
-    <p id="status"></p>
-  </div>
+<div class="container">
+  <input type="file" id="upload" accept="image/*"><br>
+  <button onclick="compressImage()">Compress Image</button>
+  <p id="status"></p>
 
-  <footer>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="terms.html">Terms</a>
-  </footer>
+  <img id="preview" style="display:none;">
+  <br>
+  <a id="download" style="display:none;" download="compressed.jpg">
+    <button>Download Image</button>
+  </a>
+</div>
 
-  <script>
+<footer>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="privacy.html">Privacy Policy</a>
+  <a href="terms.html">Terms</a>
+</footer>
+
+<script>
 function compressImage() {
   const fileInput = document.getElementById("upload");
   const preview = document.getElementById("preview");
-  const info = document.getElementById("info");
-  const downloadBtn = document.getElementById("downloadBtn");
+  const download = document.getElementById("download");
+  const status = document.getElementById("status");
 
   if (!fileInput.files[0]) {
     alert("Please select an image");
@@ -85,11 +95,11 @@ function compressImage() {
   const file = fileInput.files[0];
   const reader = new FileReader();
 
-  reader.onload = function (e) {
+  reader.onload = function(e) {
     const img = new Image();
     img.src = e.target.result;
 
-    img.onload = function () {
+    img.onload = function() {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
@@ -98,28 +108,21 @@ function compressImage() {
 
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      canvas.toBlob(function (blob) {
-        const url = URL.createObjectURL(blob);
+      const compressedData = canvas.toDataURL("image/jpeg", 0.6);
 
-        preview.src = url;
-        preview.style.display = "block";
+      preview.src = compressedData;
+      preview.style.display = "block";
 
-        downloadBtn.style.display = "inline-block";
-        downloadBtn.onclick = function () {
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = "compressed-image.jpg";
-          a.click();
-        };
+      download.href = compressedData;
+      download.style.display = "inline-block";
 
-        info.innerText =
-          "Original: " + (file.size / 1024).toFixed(2) + " KB | " +
-          "Compressed: " + (blob.size / 1024).toFixed(2) + " KB";
-      }, "image/jpeg", 0.6);
+      status.innerText = "Image compressed successfully ✅";
     };
   };
 
   reader.readAsDataURL(file);
 }
-  </script>
-    
+</script>
+
+</body>
+</html>
