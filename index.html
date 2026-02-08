@@ -71,12 +71,13 @@
   </footer>
 
   <script>
-    function compressImage(){
+function compressImage() {
   const fileInput = document.getElementById("upload");
-  const img = document.getElementById("preview");
+  const preview = document.getElementById("preview");
   const info = document.getElementById("info");
+  const downloadBtn = document.getElementById("downloadBtn");
 
-  if(!fileInput.files[0]){
+  if (!fileInput.files[0]) {
     alert("Please select an image");
     return;
   }
@@ -84,4 +85,41 @@
   const file = fileInput.files[0];
   const reader = new FileReader();
 
+  reader.onload = function (e) {
+    const img = new Image();
+    img.src = e.target.result;
+
+    img.onload = function () {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = img.width * 0.6;
+      canvas.height = img.height * 0.6;
+
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(function (blob) {
+        const url = URL.createObjectURL(blob);
+
+        preview.src = url;
+        preview.style.display = "block";
+
+        downloadBtn.style.display = "inline-block";
+        downloadBtn.onclick = function () {
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "compressed-image.jpg";
+          a.click();
+        };
+
+        info.innerText =
+          "Original: " + (file.size / 1024).toFixed(2) + " KB | " +
+          "Compressed: " + (blob.size / 1024).toFixed(2) + " KB";
+      }, "image/jpeg", 0.6);
+    };
+  };
+
+  reader.readAsDataURL(file);
+}
+  </script>
     
