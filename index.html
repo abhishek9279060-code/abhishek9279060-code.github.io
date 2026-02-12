@@ -129,19 +129,98 @@
 
 </body>
 </html>
-Image Compressor Tool
-This is a simple and fast online image compressor tool. You can reduce image size without losing much quality.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF to JPG Converter</title>
 
-How to Use
-Click on the "Choose Image" button
-Select an image from your device
-Adjust compression level if available
-Click on "Compress Image"
-Download the compressed image
-Features
-Fast image compression
-No signup required
-Works on mobile and desktop
-Supports JPG, PNG, WebP
-Note
-All image processing happens in your browser. Your images are not uploaded to any server.
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  text-align:center;
+  padding:40px;
+  background:#f4f4f4;
+}
+.container{
+  background:#fff;
+  padding:30px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
+  max-width:450px;
+  margin:auto;
+}
+button{
+  padding:10px 20px;
+  background:#007bff;
+  color:white;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+button:hover{
+  background:#0056b3;
+}
+canvas{
+  margin-top:20px;
+  max-width:100%;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>PDF to JPG Converter</h2>
+<input type="file" id="pdfInput" accept="application/pdf"><br><br>
+<button onclick="convertPDF()">Convert to JPG</button>
+<br>
+<canvas id="canvas"></canvas>
+<br>
+<a id="download" style="display:none;" download="converted.jpg">
+<button>Download JPG</button>
+</a>
+</div>
+
+<script>
+async function convertPDF() {
+  const file = document.getElementById("pdfInput").files[0];
+  if (!file) {
+    alert("Please select a PDF file.");
+    return;
+  }
+
+  const fileReader = new FileReader();
+  fileReader.onload = async function() {
+    const typedarray = new Uint8Array(this.result);
+
+    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+    const page = await pdf.getPage(1);
+
+    const scale = 1.5;
+    const viewport = page.getViewport({ scale: scale });
+
+    const canvas = document.getElementById("canvas");
+    const context = canvas.getContext("2d");
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    await page.render({
+      canvasContext: context,
+      viewport: viewport
+    }).promise;
+
+    const imgData = canvas.toDataURL("image/jpeg");
+    const download = document.getElementById("download");
+    download.href = imgData;
+    download.style.display = "inline";
+  };
+
+  fileReader.readAsArrayBuffer(file);
+}
+</script>
+
+</body>
+</html>
