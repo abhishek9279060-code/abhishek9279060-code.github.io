@@ -397,15 +397,15 @@ function resizeImage() {
   const file = document.getElementById("imageInput").files[0];
   const width = document.getElementById("width").value;
   const height = document.getElementById("height").value;
-
-  if (!file || !width || !height) {
+if (fileInput.files.length === 0 || width === "" || height === "") {
     alert("Please select image and enter width & height.");
     return;
   }
 
   const reader = new FileReader();
   reader.readAsDataURL(file);
-
+const file = fileInput.files[0];
+reader.readAsDataURL(file);
   reader.onload = function(event) {
     const img = new Image();
     img.src = event.target.result;
@@ -426,7 +426,7 @@ function resizeImage() {
       download.style.display = "inline";
     };
   };
-}
+      }
 </script>
 
 </body>
